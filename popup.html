@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style>
+        body {
+            width: 250px;
+            padding: 15px;
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #f0f3f5;
+            margin: 0;
+        }
+
+        h3 {
+            color: #2c3e50;
+            text-align: center;
+            margin-top: 0;
+            font-size: 18px;
+        }
+
+        .container {
+            background: white;
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        input {
+            width: 90%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            outline: none;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+
+        /* List eka penna meka ona */
+        ul {
+            list-style: none;
+            padding: 0;
+            margin-top: 15px;
+        }
+
+        li {
+            background: #eef7fe;
+            margin-bottom: 5px;
+            padding: 8px;
+            border-radius: 5px;
+            font-size: 14px;
+            border-left: 3px solid #3498db;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h3>Ada Karana De:</h3>
+        <input type="text" id="taskInput" placeholder="Task eka gahanna...">
+        <button id="saveButton">Save Task</button>
+
+        <ul id="listContainer"></ul>
+    </div>
+    <script src="popup.js"></script>
+</body>
+
+</html>
