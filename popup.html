@@ -19,19 +19,29 @@
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
         }
 
-        /* Icon ekath ekka thiyena Header eka */
         .header {
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 12px;
-            margin-bottom: 20px;
+            margin-bottom: 5px; /* Margin eka poddak adu kala date ekata ida ganna */
         }
 
         .header h3 {
             color: #2c3e50;
             margin: 0;
             font-size: 20px;
+        }
+
+        /* ADA DATE EKA PENNA CSS */
+        #dateDisplay {
+            text-align: center;
+            color: #7f8c8d;
+            font-size: 11px;
+            margin-bottom: 20px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .input-group {
@@ -48,9 +58,7 @@
             outline: none;
         }
 
-        input:focus {
-            border-color: #3498db;
-        }
+        input:focus { border-color: #3498db; }
 
         #saveButton {
             padding: 10px 15px;
@@ -63,9 +71,7 @@
             transition: 0.3s;
         }
 
-        #saveButton:hover {
-            background-color: #2980b9;
-        }
+        #saveButton:hover { background-color: #2980b9; }
 
         ul {
             list-style: none;
@@ -82,6 +88,14 @@
             padding: 12px;
             border-radius: 10px;
             border-left: 5px solid #3498db;
+        }
+
+        /* EMPTY MESSAGE EKATA CSS */
+        #emptyMessage {
+            display: none; /* Initially hide wenna */
+            text-align: center;
+            padding: 20px;
+            color: #bdc3c7;
         }
 
         .task-text {
@@ -101,15 +115,10 @@
             font-weight: bold;
             cursor: pointer;
         }
-
-        .remove-btn:hover {
-            background-color: #d63031;
-        }
     </style>
 </head>
 
 <body>
-
     <div class="container">
         <div class="header">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#3498db" stroke-width="2.5"
@@ -120,9 +129,16 @@
             <h3>My Tasks</h3>
         </div>
 
+        <div id="dateDisplay"></div>
+
         <div class="input-group">
             <input type="text" id="taskInput" placeholder="Add a new mission...">
             <button id="saveButton">Add</button>
+        </div>
+
+        <div id="emptyMessage">
+            <div style="font-size: 40px;">🌟</div>
+            <p style="margin: 5px 0 0; font-weight: 500;">All caught up!</p>
         </div>
 
         <ul id="listContainer"></ul>
