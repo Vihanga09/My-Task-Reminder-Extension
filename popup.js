@@ -5,12 +5,12 @@ document.addEventListener('DOMContentLoaded', function () {
     const emptyMessage = document.getElementById('emptyMessage');
     const dateDisplay = document.getElementById('dateDisplay');
 
-    // 1. Ada Date eka lassanata penna hadamu
+    // 1. Sgowing today's date
     const options = { weekday: 'long', month: 'long', day: 'numeric' };
     const today = new Date().toLocaleDateString('en-US', options);
     dateDisplay.innerText = today;
 
-    // 2. Storage load - Load weddith empty da kiyala check karanawa
+    // 2. Storage load - checking empty
     chrome.storage.sync.get(['tasks'], function (result) {
         if (result.tasks && result.tasks.length > 0) {
             result.tasks.forEach(task => addTaskToDOM(task));
@@ -82,7 +82,7 @@ document.addEventListener('DOMContentLoaded', function () {
         listContainer.appendChild(li);
     }
 
-    // List eka empty da kiyala check karana podi function ekak
+    // check empty function
     function checkIfEmpty() {
         if (listContainer.children.length === 0) {
             emptyMessage.style.display = 'block';
@@ -104,4 +104,5 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
     }
+
 });
