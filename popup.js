@@ -4,105 +4,68 @@ document.addEventListener('DOMContentLoaded', function () {
     const listContainer = document.getElementById('listContainer');
     const emptyMessage = document.getElementById('emptyMessage');
     const dateDisplay = document.getElementById('dateDisplay');
+    const taskCount = document.getElementById('taskCount');
 
-    // 1. Sgowing today's date
+    // Load success sound
+    const dingSound = new Audio('ding.mp3');
+
+    // Show current date
     const options = { weekday: 'long', month: 'long', day: 'numeric' };
-    const today = new Date().toLocaleDateString('en-US', options);
-    dateDisplay.innerText = today;
+    dateDisplay.innerText = new Date().toLocaleDateString('en-US', options);
 
-    // 2. Storage load - checking empty
+    function updateUI() {
+        const count = listContainer.children.length;
+        taskCount.innerText = `Tasks: ${count}`;
+        emptyMessage.style.display = (count === 0) ? 'block' : 'none';
+    }
+
+    // Load tasks from storage
     chrome.storage.sync.get(['tasks'], function (result) {
-        if (result.tasks && result.tasks.length > 0) {
+        if (result.tasks) {
             result.tasks.forEach(task => addTaskToDOM(task));
-            emptyMessage.style.display = 'none';
-        } else {
-            emptyMessage.style.display = 'block';
         }
-    });
-
-    taskInput.addEventListener('keypress', function (e) {
-        if (e.key === 'Enter') {
-            saveButton.click();
-        }
+        updateUI();
     });
 
     saveButton.addEventListener('click', function () {
-        const taskValue = taskInput.value.trim();
-        if (taskValue !== "") {
-            addTaskToDOM(taskValue);
-            saveTaskToStorage(taskValue);
+        const taskVal = taskInput.value.trim();
+        if (taskVal) {
+            addTaskToDOM(taskVal);
+            saveTask(taskVal);
             taskInput.value = '';
-            emptyMessage.style.display = 'none'; // Task ekak dapu gaman empty msg eka ain karanawa
+            updateUI();
         }
     });
 
     function addTaskToDOM(task) {
         const li = document.createElement('li');
-
-        li.style.cssText = `
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            background: #f1f8ff; 
-            margin-bottom: 10px; 
-            padding: 10px 15px; 
-            border-radius: 10px; 
-            border-left: 5px solid #3498db;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-        `;
-
-        li.innerHTML = `
-            <span class="task-text" style="color: #2c3e50; font-size: 14px; flex: 1; font-weight: 500;">${task}</span>
-            <div style="display: flex; gap: 8px; align-items: center;">
-                <button class="edit-btn" style="background: #f1c40f; color: white; border: none; border-radius: 6px; padding: 6px 12px; cursor: pointer; font-size: 11px; font-weight: bold; transition: 0.2s;">Edit</button>
-                <button class="remove-btn" style="background: #ff7675; color: white; border: none; border-radius: 6px; padding: 6px 12px; cursor: pointer; font-size: 11px; font-weight: bold; transition: 0.2s;">Remove</button>
-            </div>
-        `;
-
-        // EDIT FUNCTION
-        li.querySelector('.edit-btn').addEventListener('click', function () {
-            taskInput.value = task;
-            taskInput.focus();
-            li.remove();
-            removeTaskFromStorage(task);
-            checkIfEmpty(); // Edit karala ain weddi list eka check karanawa
-        });
-
-        // REMOVE FUNCTION
-        li.querySelector('.remove-btn').addEventListener('click', function () {
+        li.innerHTML = `<span class="task-text">${task}</span><button class="remove-btn">Remove</button>`;
+        
+        li.querySelector('.remove-btn').addEventListener('click', () => {
+            dingSound.play(); // Play "Ding" sound
             li.style.opacity = '0';
-            li.style.transform = 'scale(0.95)';
+            li.style.transition = '0.3s';
             setTimeout(() => {
                 li.remove();
-                removeTaskFromStorage(task);
-                checkIfEmpty(); // Task eka remove unama list eka check karanawa
-            }, 200);
+                removeTask(task);
+                updateUI();
+            }, 300);
         });
-
         listContainer.appendChild(li);
     }
 
-    // check empty function
-    function checkIfEmpty() {
-        if (listContainer.children.length === 0) {
-            emptyMessage.style.display = 'block';
-        }
-    }
-
-    function saveTaskToStorage(task) {
-        chrome.storage.sync.get(['tasks'], function (result) {
-            let tasks = result.tasks ? [...result.tasks, task] : [task];
-            chrome.storage.sync.set({ tasks: tasks });
+    function saveTask(t) {
+        chrome.storage.sync.get(['tasks'], r => {
+            const ts = r.tasks ? [...r.tasks, t] : [t];
+            chrome.storage.sync.set({tasks: ts});
         });
     }
 
-    function removeTaskFromStorage(taskToRemove) {
-        chrome.storage.sync.get(['tasks'], function (result) {
-            if (result.tasks) {
-                const updatedTasks = result.tasks.filter(t => t !== taskToRemove);
-                chrome.storage.sync.set({ tasks: updatedTasks });
+    function removeTask(t) {
+        chrome.storage.sync.get(['tasks'], r => {
+            if (r.tasks) {
+                chrome.storage.sync.set({tasks: r.tasks.filter(x => x !== t)});
             }
         });
     }
-
 });
