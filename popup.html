@@ -5,11 +5,14 @@
     <style>
         body { width: 320px; padding: 15px; font-family: 'Segoe UI', sans-serif; background-color: #f8f9fa; margin: 0; }
         .container { background: #ffffff; padding: 20px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1); }
-        .header { display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 5px; }
+        
+        /* Header section with icon */
+        .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 5px; }
         .header h3 { color: #2c3e50; margin: 0; font-size: 20px; }
         
-        #dateDisplay { text-align: center; color: #7f8c8d; font-size: 11px; margin-bottom: 20px; font-weight: 600; text-transform: uppercase; }
+        #dateDisplay { text-align: center; color: #7f8c8d; font-size: 11px; margin-bottom: 20px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
         
+        /* Input styling */
         .input-group { display: flex; gap: 8px; margin-bottom: 20px; }
         input[type="text"] { flex: 1; padding: 10px; border: 2px solid #dfe6e9; border-radius: 8px; outline: none; transition: 0.3s; }
         input[type="text"]:focus { border-color: #3498db; }
@@ -19,7 +22,7 @@
 
         ul { list-style: none; padding: 0; margin: 0; }
         
-        /* Task item styling */
+        /* Task item styling with animation support */
         li { 
             display: flex; 
             align-items: center; 
@@ -28,45 +31,43 @@
             padding: 12px; 
             border-radius: 10px; 
             border-left: 5px solid #3498db;
-            transition: 0.3s;
+            transition: all 0.3s ease; /* Slide animation */
         }
 
-        /* Checkbox styling */
-        .task-checkbox {
-            width: 18px;
-            height: 18px;
-            margin-right: 12px;
-            cursor: pointer;
-            accent-color: #2ecc71; /* Green color when checked */
-        }
-
+        .task-checkbox { width: 18px; height: 18px; margin-right: 12px; cursor: pointer; accent-color: #2ecc71; }
         .task-text { color: #2f3542; font-size: 14px; flex-grow: 1; transition: 0.3s; }
 
         .remove-btn { 
-            background-color: #ff7675; 
-            color: white; 
-            border: none; 
-            border-radius: 6px; 
-            padding: 6px 10px; 
-            font-size: 11px; 
-            cursor: pointer; 
-            font-weight: bold;
-            margin-left: 10px;
+            background-color: #ff7675; color: white; border: none; border-radius: 6px; 
+            padding: 6px 10px; font-size: 11px; cursor: pointer; font-weight: bold;
         }
         .remove-btn:hover { background-color: #e17055; }
 
+        /* Footer section */
+        .footer { 
+            display: flex; justify-content: space-between; align-items: center; 
+            margin-top: 15px; padding-top: 10px; border-top: 1px solid #eee; 
+        }
+        #taskCount { font-size: 11px; color: #95a5a6; font-weight: bold; }
+        
+        /* Clear All styling */
+        #clearAll { 
+            font-size: 11px; color: #ff7675; cursor: pointer; background: none; 
+            border: none; font-weight: bold; text-decoration: underline; padding: 0;
+        }
+        #clearAll:hover { color: #d63031; }
+
         #emptyMessage { display: none; text-align: center; padding: 20px; color: #bdc3c7; }
-        #taskCount { display: block; text-align: right; font-size: 11px; color: #95a5a6; font-weight: bold; margin-top: 10px; padding-top: 10px; border-top: 1px solid #eee; }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#3498db" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <h3>My Tasks</h3>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3498db" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
                 <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
             </svg>
-            <h3>My Tasks</h3>
         </div>
         
         <div id="dateDisplay"></div>
@@ -77,13 +78,16 @@
         </div>
 
         <div id="emptyMessage">
-            <div style="font-size: 40px;">🌟</div>
-            <p style="margin-top: 10px; font-weight: 500;">All caught up!</p>
+            <div style="font-size: 30px;">🌟</div>
+            <p style="margin-top: 5px; font-weight: 500;">All caught up!</p>
         </div>
 
         <ul id="listContainer"></ul>
 
-        <span id="taskCount">Tasks: 0</span>
+        <div class="footer">
+            <span id="taskCount">Tasks: 0</span>
+            <button id="clearAll">Clear Completed</button>
+        </div>
     </div>
     <script src="popup.js"></script>
 </body>

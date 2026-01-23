@@ -5,6 +5,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const emptyMessage = document.getElementById('emptyMessage');
     const dateDisplay = document.getElementById('dateDisplay');
     const taskCount = document.getElementById('taskCount');
+    const clearAllBtn = document.getElementById('clearAll'); // New Clear Button
 
     const dingSound = new Audio('ding.mp3');
 
@@ -17,7 +18,7 @@ document.addEventListener('DOMContentLoaded', function () {
         emptyMessage.style.display = (count === 0) ? 'block' : 'none';
     }
 
-    // Load tasks from storage (Tasks are now objects: {text, completed})
+    // Load tasks from storage
     chrome.storage.sync.get(['tasks'], function (result) {
         if (result.tasks) {
             result.tasks.forEach(taskObj => addTaskToDOM(taskObj.text, taskObj.completed));
@@ -38,11 +39,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function addTaskToDOM(text, completed = false) {
         const li = document.createElement('li');
-        li.style.display = 'flex';
-        li.style.alignItems = 'center';
-        li.style.gap = '10px';
-
-        // Create checkbox
+        
+        // Checkbox creation
         const checkbox = document.createElement('input');
         checkbox.type = 'checkbox';
         checkbox.checked = completed;
@@ -51,9 +49,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const span = document.createElement('span');
         span.className = 'task-text';
         span.innerText = text;
-        span.style.flexGrow = '1';
         
-        // Apply strike-through if already completed
         if (completed) {
             span.style.textDecoration = 'line-through';
             span.style.opacity = '0.5';
@@ -63,12 +59,11 @@ document.addEventListener('DOMContentLoaded', function () {
         removeBtn.className = 'remove-btn';
         removeBtn.innerText = 'Remove';
 
-        // Checkbox click event (Mark as Done)
         checkbox.addEventListener('change', function() {
             if (checkbox.checked) {
                 span.style.textDecoration = 'line-through';
                 span.style.opacity = '0.5';
-                dingSound.play(); // Play sound when marking as done
+                dingSound.play();
             } else {
                 span.style.textDecoration = 'none';
                 span.style.opacity = '1';
@@ -76,9 +71,12 @@ document.addEventListener('DOMContentLoaded', function () {
             updateTaskStatus(text, checkbox.checked);
         });
 
+        // Remove with Slide Animation
         removeBtn.addEventListener('click', () => {
+            li.style.transform = 'translateX(20px)'; // Slide right
             li.style.opacity = '0';
-            li.style.transition = '0.3s';
+            li.style.transition = '0.3s ease';
+            
             setTimeout(() => {
                 li.remove();
                 removeTask(text);
@@ -91,6 +89,20 @@ document.addEventListener('DOMContentLoaded', function () {
         li.appendChild(removeBtn);
         listContainer.appendChild(li);
     }
+
+    // Function to clear only completed tasks
+    clearAllBtn.addEventListener('click', () => {
+        chrome.storage.sync.get(['tasks'], (result) => {
+            if (result.tasks) {
+                // Keep only tasks that are NOT completed
+                const remainingTasks = result.tasks.filter(t => !t.completed);
+                chrome.storage.sync.set({ tasks: remainingTasks }, () => {
+                    // Reload the UI to show only remaining tasks
+                    window.location.reload();
+                });
+            }
+        });
+    });
 
     function saveTask(taskObj) {
         chrome.storage.sync.get(['tasks'], r => {
