@@ -3,59 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <style>
-        body { width: 320px; padding: 15px; font-family: 'Segoe UI', sans-serif; background-color: #f8f9fa; margin: 0; }
+        body { width: 350px; padding: 15px; font-family: 'Segoe UI', sans-serif; background-color: #f8f9fa; margin: 0; }
         .container { background: #ffffff; padding: 20px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1); }
         
-        /* Header section with icon */
         .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 5px; }
         .header h3 { color: #2c3e50; margin: 0; font-size: 20px; }
         
         #dateDisplay { text-align: center; color: #7f8c8d; font-size: 11px; margin-bottom: 20px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
         
-        /* Input styling */
         .input-group { display: flex; gap: 8px; margin-bottom: 20px; }
-        input[type="text"] { flex: 1; padding: 10px; border: 2px solid #dfe6e9; border-radius: 8px; outline: none; transition: 0.3s; }
+        input[type="text"] { flex: 1; padding: 10px; border: 2px solid #dfe6e9; border-radius: 8px; outline: none; transition: 0.3s; font-size: 13px; }
         input[type="text"]:focus { border-color: #3498db; }
+        
+        #priorityInput { 
+            padding: 8px; border: 2px solid #dfe6e9; border-radius: 8px; 
+            outline: none; cursor: pointer; background: #fff; font-size: 12px; 
+        }
         
         #saveButton { padding: 10px 15px; background-color: #3498db; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; }
         #saveButton:hover { background-color: #2980b9; }
 
         ul { list-style: none; padding: 0; margin: 0; }
         
-        /* Task item styling with animation support */
         li { 
-            display: flex; 
-            align-items: center; 
-            background: #f1f2f6; 
-            margin-bottom: 10px; 
-            padding: 12px; 
-            border-radius: 10px; 
+            display: flex; align-items: center; background: #f1f2f6; 
+            margin-bottom: 10px; padding: 12px; border-radius: 10px; 
             border-left: 5px solid #3498db;
-            transition: all 0.3s ease; /* Slide animation */
+            transition: all 0.3s ease; 
         }
 
         .task-checkbox { width: 18px; height: 18px; margin-right: 12px; cursor: pointer; accent-color: #2ecc71; }
         .task-text { color: #2f3542; font-size: 14px; flex-grow: 1; transition: 0.3s; }
 
+        .edit-btn { 
+            background-color: #f1c40f; color: white; border: none; border-radius: 6px; 
+            padding: 6px 10px; font-size: 11px; cursor: pointer; font-weight: bold; margin-left: 5px;
+        }
+
         .remove-btn { 
             background-color: #ff7675; color: white; border: none; border-radius: 6px; 
-            padding: 6px 10px; font-size: 11px; cursor: pointer; font-weight: bold;
+            padding: 6px 10px; font-size: 11px; cursor: pointer; font-weight: bold; margin-left: 5px;
         }
-        .remove-btn:hover { background-color: #e17055; }
 
-        /* Footer section */
         .footer { 
             display: flex; justify-content: space-between; align-items: center; 
             margin-top: 15px; padding-top: 10px; border-top: 1px solid #eee; 
         }
         #taskCount { font-size: 11px; color: #95a5a6; font-weight: bold; }
-        
-        /* Clear All styling */
-        #clearAll { 
-            font-size: 11px; color: #ff7675; cursor: pointer; background: none; 
-            border: none; font-weight: bold; text-decoration: underline; padding: 0;
-        }
-        #clearAll:hover { color: #d63031; }
+        #clearAll { font-size: 11px; color: #ff7675; cursor: pointer; background: none; border: none; font-weight: bold; text-decoration: underline; padding: 0; }
 
         #emptyMessage { display: none; text-align: center; padding: 20px; color: #bdc3c7; }
     </style>
@@ -74,6 +69,11 @@
 
         <div class="input-group">
             <input type="text" id="taskInput" placeholder="Add a new mission...">
+            <select id="priorityInput">
+                <option value="high">High</option>
+                <option value="medium" selected>Med</option>
+                <option value="low">Low</option>
+            </select>
             <button id="saveButton">Add</button>
         </div>
 

@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', function () {
     const taskInput = document.getElementById('taskInput');
+    const priorityInput = document.getElementById('priorityInput');
     const saveButton = document.getElementById('saveButton');
     const listContainer = document.getElementById('listContainer');
     const emptyMessage = document.getElementById('emptyMessage');
@@ -18,37 +19,48 @@ document.addEventListener('DOMContentLoaded', function () {
         emptyMessage.style.display = (count === 0) ? 'block' : 'none';
     }
 
+    // Load tasks from storage
     chrome.storage.sync.get(['tasks'], function (result) {
         if (result.tasks) {
-            result.tasks.forEach(taskObj => addTaskToDOM(taskObj.text, taskObj.completed));
+            result.tasks.forEach(taskObj => addTaskToDOM(taskObj.text, taskObj.completed, taskObj.priority));
         }
         updateUI();
     });
 
     saveButton.addEventListener('click', function () {
         const taskVal = taskInput.value.trim();
+        const priorityVal = priorityInput.value;
+
         if (taskVal) {
-            const taskObj = { text: taskVal, completed: false };
-            addTaskToDOM(taskObj.text, taskObj.completed);
+            const taskObj = { text: taskVal, completed: false, priority: priorityVal };
+            addTaskToDOM(taskObj.text, taskObj.completed, taskObj.priority);
             saveTask(taskObj);
             taskInput.value = '';
             updateUI();
         }
     });
 
-    function addTaskToDOM(text, completed = false) {
+    function addTaskToDOM(text, completed = false, priority = 'medium') {
         const li = document.createElement('li');
         
-        //  Fade-in Animation Start ---
+        // Priority Border Colors
+        if (priority === 'high') {
+            li.style.borderLeft = '5px solid #ff7675'; // Red
+        } else if (priority === 'low') {
+            li.style.borderLeft = '5px solid #2ecc71'; // Green
+        } else {
+            li.style.borderLeft = '5px solid #3498db'; // Blue
+        }
+        
+        // Fade-in Animation
         li.style.opacity = '0';
         li.style.transform = 'translateY(-10px)';
-        li.style.transition = 'all 1.5s ease';
+        li.style.transition = 'all 0.5s ease';
         
         setTimeout(() => {
             li.style.opacity = '1';
             li.style.transform = 'translateY(0)';
         }, 10);
-        // --- Animation End ---
 
         const checkbox = document.createElement('input');
         checkbox.type = 'checkbox';
