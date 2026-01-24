@@ -44,23 +44,15 @@ document.addEventListener('DOMContentLoaded', function () {
         const li = document.createElement('li');
         
         // Priority Border Colors
-        if (priority === 'high') {
-            li.style.borderLeft = '5px solid #ff7675'; // Red
-        } else if (priority === 'low') {
-            li.style.borderLeft = '5px solid #2ecc71'; // Green
-        } else {
-            li.style.borderLeft = '5px solid #3498db'; // Blue
-        }
+        if (priority === 'high') li.style.borderLeft = '5px solid #ff7675';
+        else if (priority === 'low') li.style.borderLeft = '5px solid #2ecc71';
+        else li.style.borderLeft = '5px solid #3498db';
         
-        // Fade-in Animation
+        // Animation
         li.style.opacity = '0';
         li.style.transform = 'translateY(-10px)';
         li.style.transition = 'all 0.5s ease';
-        
-        setTimeout(() => {
-            li.style.opacity = '1';
-            li.style.transform = 'translateY(0)';
-        }, 10);
+        setTimeout(() => { li.style.opacity = '1'; li.style.transform = 'translateY(0)'; }, 10);
 
         const checkbox = document.createElement('input');
         checkbox.type = 'checkbox';
@@ -70,52 +62,54 @@ document.addEventListener('DOMContentLoaded', function () {
         const span = document.createElement('span');
         span.className = 'task-text';
         span.innerText = text;
-        
-        if (completed) {
-            span.style.textDecoration = 'line-through';
-            span.style.opacity = '0.5';
-        }
+        if (completed) { span.style.textDecoration = 'line-through'; span.style.opacity = '0.5'; }
+
+        // --- Commit 3: Action Buttons (Edit & Remove) ---
+        const btnContainer = document.createElement('div');
+        btnContainer.className = 'action-btns';
+
+        const editBtn = document.createElement('button');
+        editBtn.innerText = 'Edit';
+        editBtn.className = 'edit-btn';
 
         const removeBtn = document.createElement('button');
         removeBtn.className = 'remove-btn';
         removeBtn.innerText = 'Remove';
 
-        checkbox.addEventListener('change', function() {
-            if (checkbox.checked) {
-                span.style.textDecoration = 'line-through';
-                span.style.opacity = '0.5';
-                dingSound.play();
-            } else {
-                span.style.textDecoration = 'none';
-                span.style.opacity = '1';
+        // Edit Functionality
+        editBtn.addEventListener('click', () => {
+            const newText = prompt("Edit your task:", span.innerText);
+            if (newText !== null && newText.trim() !== "") {
+                const oldText = span.innerText;
+                span.innerText = newText;
+                updateTaskText(oldText, newText); // Storage එක අප්ඩේට් කරන්න
             }
-            updateTaskStatus(text, checkbox.checked);
+        });
+
+        checkbox.addEventListener('change', function() {
+            if (checkbox.checked) { span.style.textDecoration = 'line-through'; span.style.opacity = '0.5'; dingSound.play(); }
+            else { span.style.textDecoration = 'none'; span.style.opacity = '1'; }
+            updateTaskStatus(span.innerText, checkbox.checked);
         });
 
         removeBtn.addEventListener('click', () => {
             li.style.transform = 'translateX(20px)';
             li.style.opacity = '0';
-            setTimeout(() => {
-                li.remove();
-                removeTask(text);
-                updateUI();
-            }, 300);
+            setTimeout(() => { li.remove(); removeTask(span.innerText); updateUI(); }, 300);
         });
 
         li.appendChild(checkbox);
         li.appendChild(span);
-        li.appendChild(removeBtn);
+        btnContainer.appendChild(editBtn);
+        btnContainer.appendChild(removeBtn);
+        li.appendChild(btnContainer);
         listContainer.appendChild(li);
     }
 
     clearAllBtn.addEventListener('click', () => {
-        chrome.storage.sync.get(['tasks'], (result) => {
-            if (result.tasks) {
-                const remainingTasks = result.tasks.filter(t => !t.completed);
-                chrome.storage.sync.set({ tasks: remainingTasks }, () => {
-                    window.location.reload();
-                });
-            }
+        chrome.storage.sync.get(['tasks'], (r) => {
+            const remaining = r.tasks.filter(t => !t.completed);
+            chrome.storage.sync.set({ tasks: remaining }, () => window.location.reload());
         });
     });
 
@@ -129,10 +123,17 @@ document.addEventListener('DOMContentLoaded', function () {
     function updateTaskStatus(text, isCompleted) {
         chrome.storage.sync.get(['tasks'], r => {
             if (r.tasks) {
-                const updatedTasks = r.tasks.map(t => {
-                    if (t.text === text) return { ...t, completed: isCompleted };
-                    return t;
-                });
+                const updatedTasks = r.tasks.map(t => (t.text === text ? { ...t, completed: isCompleted } : t));
+                chrome.storage.sync.set({ tasks: updatedTasks });
+            }
+        });
+    }
+
+    // --- Update Function---
+    function updateTaskText(oldText, newText) {
+        chrome.storage.sync.get(['tasks'], r => {
+            if (r.tasks) {
+                const updatedTasks = r.tasks.map(t => (t.text === oldText ? { ...t, text: newText } : t));
                 chrome.storage.sync.set({ tasks: updatedTasks });
             }
         });
