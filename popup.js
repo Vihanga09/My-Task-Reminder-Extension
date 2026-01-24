@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const emptyMessage = document.getElementById('emptyMessage');
     const dateDisplay = document.getElementById('dateDisplay');
     const taskCount = document.getElementById('taskCount');
-    const clearAllBtn = document.getElementById('clearAll'); // New Clear Button
+    const clearAllBtn = document.getElementById('clearAll');
 
     const dingSound = new Audio('ding.mp3');
 
@@ -18,7 +18,6 @@ document.addEventListener('DOMContentLoaded', function () {
         emptyMessage.style.display = (count === 0) ? 'block' : 'none';
     }
 
-    // Load tasks from storage
     chrome.storage.sync.get(['tasks'], function (result) {
         if (result.tasks) {
             result.tasks.forEach(taskObj => addTaskToDOM(taskObj.text, taskObj.completed));
@@ -40,7 +39,17 @@ document.addEventListener('DOMContentLoaded', function () {
     function addTaskToDOM(text, completed = false) {
         const li = document.createElement('li');
         
-        // Checkbox creation
+        //  Fade-in Animation Start ---
+        li.style.opacity = '0';
+        li.style.transform = 'translateY(-10px)';
+        li.style.transition = 'all 1.5s ease';
+        
+        setTimeout(() => {
+            li.style.opacity = '1';
+            li.style.transform = 'translateY(0)';
+        }, 10);
+        // --- Animation End ---
+
         const checkbox = document.createElement('input');
         checkbox.type = 'checkbox';
         checkbox.checked = completed;
@@ -71,12 +80,9 @@ document.addEventListener('DOMContentLoaded', function () {
             updateTaskStatus(text, checkbox.checked);
         });
 
-        // Remove with Slide Animation
         removeBtn.addEventListener('click', () => {
-            li.style.transform = 'translateX(20px)'; // Slide right
+            li.style.transform = 'translateX(20px)';
             li.style.opacity = '0';
-            li.style.transition = '0.3s ease';
-            
             setTimeout(() => {
                 li.remove();
                 removeTask(text);
@@ -90,14 +96,11 @@ document.addEventListener('DOMContentLoaded', function () {
         listContainer.appendChild(li);
     }
 
-    // Function to clear only completed tasks
     clearAllBtn.addEventListener('click', () => {
         chrome.storage.sync.get(['tasks'], (result) => {
             if (result.tasks) {
-                // Keep only tasks that are NOT completed
                 const remainingTasks = result.tasks.filter(t => !t.completed);
                 chrome.storage.sync.set({ tasks: remainingTasks }, () => {
-                    // Reload the UI to show only remaining tasks
                     window.location.reload();
                 });
             }
