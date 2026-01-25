@@ -49,10 +49,22 @@
             display: flex; justify-content: space-between; align-items: center; 
             margin-top: 15px; padding-top: 10px; border-top: 1px solid #eee; 
         }
-        #taskCount { font-size: 11px; color: #95a5a6; font-weight: bold; }
+        #taskCount { font-size: 11px; color: #95a5a6; font-weight: bold; transition: 0.3s; }
         #clearAll { font-size: 11px; color: #ff7675; cursor: pointer; background: none; border: none; font-weight: bold; text-decoration: underline; padding: 0; }
 
-        #emptyMessage { display: none; text-align: center; padding: 20px; color: #bdc3c7; }
+        /* Empty Message Animation --- */
+        #emptyMessage { 
+            display: none; 
+            text-align: center; 
+            padding: 30px 20px; 
+            color: #bdc3c7; 
+            animation: fadeInMessage 0.6s ease-out; 
+        }
+
+        @keyframes fadeInMessage {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
     </style>
 </head>
 <body>
@@ -78,8 +90,9 @@
         </div>
 
         <div id="emptyMessage">
-            <div style="font-size: 30px;">🌟</div>
-            <p style="margin-top: 5px; font-weight: 500;">All caught up!</p>
+            <div style="font-size: 40px; margin-bottom: 10px;">🎉</div>
+            <p style="margin: 0; font-weight: 600; color: #2c3e50;">All caught up!</p>
+            <p style="margin: 5px 0 0 0; font-size: 12px;">You've finished everything for now.</p>
         </div>
 
         <ul id="listContainer"></ul>

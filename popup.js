@@ -13,16 +13,25 @@ document.addEventListener('DOMContentLoaded', function () {
     const options = { weekday: 'long', month: 'long', day: 'numeric' };
     dateDisplay.innerText = new Date().toLocaleDateString('en-US', options);
 
+    // Update UI based on task count
     function updateUI() {
         const count = listContainer.children.length;
         taskCount.innerText = `Tasks: ${count}`;
-        emptyMessage.style.display = (count === 0) ? 'block' : 'none';
+        
+        if (count === 0) {
+            emptyMessage.style.display = 'block';
+            taskCount.style.color = '#2ecc71'; // Green color when no tasks
+        } else {
+            emptyMessage.style.display = 'none';
+            taskCount.style.color = '#95a5a6';
+        }
     }
 
     // Load tasks from storage and SORT them by priority
     chrome.storage.sync.get(['tasks'], function (result) {
         if (result.tasks) {
             const priorityOrder = { high: 1, medium: 2, low: 3 };
+            
             const sortedTasks = result.tasks.sort((a, b) => {
                 return (priorityOrder[a.priority] || 2) - (priorityOrder[b.priority] || 2);
             });
@@ -66,7 +75,7 @@ document.addEventListener('DOMContentLoaded', function () {
         checkbox.checked = completed;
         checkbox.className = 'task-checkbox';
 
-        //  Priority Tag එක නිර්මාණය කිරීම ---
+        // Priority Tag
         const tag = document.createElement('span');
         tag.innerText = priority.toUpperCase();
         tag.style.fontSize = '9px';
@@ -106,19 +115,29 @@ document.addEventListener('DOMContentLoaded', function () {
         });
 
         checkbox.addEventListener('change', function() {
-            if (checkbox.checked) { span.style.textDecoration = 'line-through'; span.style.opacity = '0.5'; dingSound.play(); }
-            else { span.style.textDecoration = 'none'; span.style.opacity = '1'; }
+            if (checkbox.checked) { 
+                span.style.textDecoration = 'line-through'; 
+                span.style.opacity = '0.5'; 
+                dingSound.play(); 
+            } else { 
+                span.style.textDecoration = 'none'; 
+                span.style.opacity = '1'; 
+            }
             updateTaskStatus(span.innerText, checkbox.checked);
         });
 
         removeBtn.addEventListener('click', () => {
             li.style.transform = 'translateX(20px)';
             li.style.opacity = '0';
-            setTimeout(() => { li.remove(); removeTask(span.innerText); updateUI(); }, 300);
+            setTimeout(() => { 
+                li.remove(); 
+                removeTask(span.innerText); 
+                updateUI(); 
+            }, 300);
         });
 
         li.appendChild(checkbox);
-        li.appendChild(tag); // Tag 
+        li.appendChild(tag);
         li.appendChild(span);
         btnContainer.appendChild(editBtn);
         btnContainer.appendChild(removeBtn);
@@ -130,7 +149,12 @@ document.addEventListener('DOMContentLoaded', function () {
         chrome.storage.sync.get(['tasks'], (r) => {
             if (r.tasks) {
                 const remaining = r.tasks.filter(t => !t.completed);
-                chrome.storage.sync.set({ tasks: remaining }, () => window.location.reload());
+                chrome.storage.sync.set({ tasks: remaining }, () => {
+                    // Refresh UI logic
+                    listContainer.innerHTML = '';
+                    remaining.forEach(t => addTaskToDOM(t.text, t.completed, t.priority));
+                    updateUI();
+                });
             }
         });
     });
