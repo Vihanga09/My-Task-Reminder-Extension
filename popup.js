@@ -19,12 +19,10 @@ document.addEventListener('DOMContentLoaded', function () {
         emptyMessage.style.display = (count === 0) ? 'block' : 'none';
     }
 
-    // ---  Load tasks from storage and SORT them by priority ---
+    // Load tasks from storage and SORT them by priority
     chrome.storage.sync.get(['tasks'], function (result) {
         if (result.tasks) {
             const priorityOrder = { high: 1, medium: 2, low: 3 };
-            
-            // Priority to order
             const sortedTasks = result.tasks.sort((a, b) => {
                 return (priorityOrder[a.priority] || 2) - (priorityOrder[b.priority] || 2);
             });
@@ -68,6 +66,20 @@ document.addEventListener('DOMContentLoaded', function () {
         checkbox.checked = completed;
         checkbox.className = 'task-checkbox';
 
+        //  Priority Tag එක නිර්මාණය කිරීම ---
+        const tag = document.createElement('span');
+        tag.innerText = priority.toUpperCase();
+        tag.style.fontSize = '9px';
+        tag.style.padding = '2px 6px';
+        tag.style.borderRadius = '4px';
+        tag.style.marginRight = '8px';
+        tag.style.fontWeight = 'bold';
+        tag.style.color = 'white';
+        
+        if (priority === 'high') tag.style.backgroundColor = '#ff7675';
+        else if (priority === 'low') tag.style.backgroundColor = '#2ecc71';
+        else tag.style.backgroundColor = '#3498db';
+
         const span = document.createElement('span');
         span.className = 'task-text';
         span.innerText = text;
@@ -106,6 +118,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
 
         li.appendChild(checkbox);
+        li.appendChild(tag); // Tag 
         li.appendChild(span);
         btnContainer.appendChild(editBtn);
         btnContainer.appendChild(removeBtn);
