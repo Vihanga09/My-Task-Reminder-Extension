@@ -19,10 +19,19 @@ document.addEventListener('DOMContentLoaded', function () {
         emptyMessage.style.display = (count === 0) ? 'block' : 'none';
     }
 
-    // Load tasks from storage
+    // ---  Load tasks from storage and SORT them by priority ---
     chrome.storage.sync.get(['tasks'], function (result) {
         if (result.tasks) {
-            result.tasks.forEach(taskObj => addTaskToDOM(taskObj.text, taskObj.completed, taskObj.priority));
+            const priorityOrder = { high: 1, medium: 2, low: 3 };
+            
+            // Priority to order
+            const sortedTasks = result.tasks.sort((a, b) => {
+                return (priorityOrder[a.priority] || 2) - (priorityOrder[b.priority] || 2);
+            });
+
+            sortedTasks.forEach(taskObj => {
+                addTaskToDOM(taskObj.text, taskObj.completed, taskObj.priority);
+            });
         }
         updateUI();
     });
@@ -64,7 +73,6 @@ document.addEventListener('DOMContentLoaded', function () {
         span.innerText = text;
         if (completed) { span.style.textDecoration = 'line-through'; span.style.opacity = '0.5'; }
 
-        // --- Commit 3: Action Buttons (Edit & Remove) ---
         const btnContainer = document.createElement('div');
         btnContainer.className = 'action-btns';
 
@@ -76,13 +84,12 @@ document.addEventListener('DOMContentLoaded', function () {
         removeBtn.className = 'remove-btn';
         removeBtn.innerText = 'Remove';
 
-        // Edit Functionality
         editBtn.addEventListener('click', () => {
             const newText = prompt("Edit your task:", span.innerText);
             if (newText !== null && newText.trim() !== "") {
                 const oldText = span.innerText;
                 span.innerText = newText;
-                updateTaskText(oldText, newText); // Storage එක අප්ඩේට් කරන්න
+                updateTaskText(oldText, newText);
             }
         });
 
@@ -108,8 +115,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
     clearAllBtn.addEventListener('click', () => {
         chrome.storage.sync.get(['tasks'], (r) => {
-            const remaining = r.tasks.filter(t => !t.completed);
-            chrome.storage.sync.set({ tasks: remaining }, () => window.location.reload());
+            if (r.tasks) {
+                const remaining = r.tasks.filter(t => !t.completed);
+                chrome.storage.sync.set({ tasks: remaining }, () => window.location.reload());
+            }
         });
     });
 
@@ -129,7 +138,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // --- Update Function---
     function updateTaskText(oldText, newText) {
         chrome.storage.sync.get(['tasks'], r => {
             if (r.tasks) {
