@@ -7,14 +7,37 @@ document.addEventListener('DOMContentLoaded', function () {
     const dateDisplay = document.getElementById('dateDisplay');
     const taskCount = document.getElementById('taskCount');
     const clearAllBtn = document.getElementById('clearAll');
-    
-    // Search Input ---
     const searchInput = document.getElementById('searchInput');
+    const themeToggle = document.getElementById('themeToggle');
 
     const dingSound = new Audio('ding.mp3');
 
+    // Display current date
     const options = { weekday: 'long', month: 'long', day: 'numeric' };
     dateDisplay.innerText = new Date().toLocaleDateString('en-US', options);
+
+    // Initialize UI and theme preference
+    updateUI();
+    loadTheme();
+
+    // Theme Toggle Logic
+    function loadTheme() {
+        chrome.storage.sync.get(['theme'], (result) => {
+            if (result.theme === 'dark') {
+                document.body.classList.add('dark-mode');
+                themeToggle.innerText = '☀️';
+            }
+        });
+    }
+
+    themeToggle.addEventListener('click', () => {
+        document.body.classList.toggle('dark-mode');
+        const isDark = document.body.classList.contains('dark-mode');
+        themeToggle.innerText = isDark ? '☀️' : '🌙';
+        
+        // Save current theme to storage
+        chrome.storage.sync.set({ theme: isDark ? 'dark' : 'light' });
+    });
 
     // Update UI based on task count
     function updateUI() {
@@ -30,14 +53,13 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    //  Search Functionality Implementation ---
+    // Search Functionality
     searchInput.addEventListener('input', (e) => {
         const term = e.target.value.toLowerCase();
         const tasks = listContainer.querySelectorAll('li');
         
         tasks.forEach(task => {
             const taskText = task.querySelector('.task-text').innerText.toLowerCase();
-            //hide/show tasks based on search term
             if (taskText.includes(term)) {
                 task.style.display = 'flex';
             } else {
@@ -62,6 +84,7 @@ document.addEventListener('DOMContentLoaded', function () {
         updateUI();
     });
 
+    // Save task event
     saveButton.addEventListener('click', function () {
         const taskVal = taskInput.value.trim();
         const priorityVal = priorityInput.value;
@@ -75,13 +98,16 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
+    // Helper to add task elements to UI
     function addTaskToDOM(text, completed = false, priority = 'medium') {
         const li = document.createElement('li');
         
+        // Apply priority color borders
         if (priority === 'high') li.style.borderLeft = '5px solid #ff7675';
         else if (priority === 'low') li.style.borderLeft = '5px solid #2ecc71';
         else li.style.borderLeft = '5px solid #3498db';
         
+        // Entry animation
         li.style.opacity = '0';
         li.style.transform = 'translateY(-10px)';
         li.style.transition = 'all 0.5s ease';
@@ -92,6 +118,7 @@ document.addEventListener('DOMContentLoaded', function () {
         checkbox.checked = completed;
         checkbox.className = 'task-checkbox';
 
+        // Create priority tag
         const tag = document.createElement('span');
         tag.innerText = priority.toUpperCase();
         tag.style.fontSize = '9px';
@@ -121,6 +148,7 @@ document.addEventListener('DOMContentLoaded', function () {
         removeBtn.className = 'remove-btn';
         removeBtn.innerText = 'Remove';
 
+        // Edit listener
         editBtn.addEventListener('click', () => {
             const newText = prompt("Edit your task:", span.innerText);
             if (newText !== null && newText.trim() !== "") {
@@ -130,6 +158,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
 
+        // Checkbox listener
         checkbox.addEventListener('change', function() {
             if (checkbox.checked) { 
                 span.style.textDecoration = 'line-through'; 
@@ -142,6 +171,7 @@ document.addEventListener('DOMContentLoaded', function () {
             updateTaskStatus(span.innerText, checkbox.checked);
         });
 
+        // Remove listener
         removeBtn.addEventListener('click', () => {
             li.style.transform = 'translateX(20px)';
             li.style.opacity = '0';
@@ -161,6 +191,7 @@ document.addEventListener('DOMContentLoaded', function () {
         listContainer.appendChild(li);
     }
 
+    // Clear completed tasks
     clearAllBtn.addEventListener('click', () => {
         chrome.storage.sync.get(['tasks'], (r) => {
             if (r.tasks) {
@@ -174,6 +205,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
+    // Storage helpers
     function saveTask(taskObj) {
         chrome.storage.sync.get(['tasks'], r => {
             const ts = r.tasks ? [...r.tasks, taskObj] : [taskObj];
