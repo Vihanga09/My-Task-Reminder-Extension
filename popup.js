@@ -7,6 +7,9 @@ document.addEventListener('DOMContentLoaded', function () {
     const dateDisplay = document.getElementById('dateDisplay');
     const taskCount = document.getElementById('taskCount');
     const clearAllBtn = document.getElementById('clearAll');
+    
+    // Search Input ---
+    const searchInput = document.getElementById('searchInput');
 
     const dingSound = new Audio('ding.mp3');
 
@@ -20,12 +23,28 @@ document.addEventListener('DOMContentLoaded', function () {
         
         if (count === 0) {
             emptyMessage.style.display = 'block';
-            taskCount.style.color = '#2ecc71'; // Green color when no tasks
+            taskCount.style.color = '#2ecc71'; 
         } else {
             emptyMessage.style.display = 'none';
             taskCount.style.color = '#95a5a6';
         }
     }
+
+    //  Search Functionality Implementation ---
+    searchInput.addEventListener('input', (e) => {
+        const term = e.target.value.toLowerCase();
+        const tasks = listContainer.querySelectorAll('li');
+        
+        tasks.forEach(task => {
+            const taskText = task.querySelector('.task-text').innerText.toLowerCase();
+            //hide/show tasks based on search term
+            if (taskText.includes(term)) {
+                task.style.display = 'flex';
+            } else {
+                task.style.display = 'none';
+            }
+        });
+    });
 
     // Load tasks from storage and SORT them by priority
     chrome.storage.sync.get(['tasks'], function (result) {
@@ -59,12 +78,10 @@ document.addEventListener('DOMContentLoaded', function () {
     function addTaskToDOM(text, completed = false, priority = 'medium') {
         const li = document.createElement('li');
         
-        // Priority Border Colors
         if (priority === 'high') li.style.borderLeft = '5px solid #ff7675';
         else if (priority === 'low') li.style.borderLeft = '5px solid #2ecc71';
         else li.style.borderLeft = '5px solid #3498db';
         
-        // Animation
         li.style.opacity = '0';
         li.style.transform = 'translateY(-10px)';
         li.style.transition = 'all 0.5s ease';
@@ -75,7 +92,6 @@ document.addEventListener('DOMContentLoaded', function () {
         checkbox.checked = completed;
         checkbox.className = 'task-checkbox';
 
-        // Priority Tag
         const tag = document.createElement('span');
         tag.innerText = priority.toUpperCase();
         tag.style.fontSize = '9px';
@@ -150,7 +166,6 @@ document.addEventListener('DOMContentLoaded', function () {
             if (r.tasks) {
                 const remaining = r.tasks.filter(t => !t.completed);
                 chrome.storage.sync.set({ tasks: remaining }, () => {
-                    // Refresh UI logic
                     listContainer.innerHTML = '';
                     remaining.forEach(t => addTaskToDOM(t.text, t.completed, t.priority));
                     updateUI();

@@ -11,6 +11,10 @@
         
         #dateDisplay { text-align: center; color: #7f8c8d; font-size: 11px; margin-bottom: 20px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
         
+        /*search bar*/
+        #searchInput { width: 100%; padding: 10px; margin-bottom: 15px; border: 2px solid #dfe6e9; border-radius: 8px; outline: none; font-size: 13px; box-sizing: border-box; transition: 0.3s; }
+        #searchInput:focus { border-color: #3498db; }
+
         .input-group { display: flex; gap: 8px; margin-bottom: 20px; }
         input[type="text"] { flex: 1; padding: 10px; border: 2px solid #dfe6e9; border-radius: 8px; outline: none; transition: 0.3s; font-size: 13px; }
         input[type="text"]:focus { border-color: #3498db; }
@@ -78,6 +82,8 @@
         </div>
         
         <div id="dateDisplay"></div>
+
+        <input type="text" id="searchInput" placeholder="🔍 Search tasks...">
 
         <div class="input-group">
             <input type="text" id="taskInput" placeholder="Add a new mission...">
