@@ -2,95 +2,119 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-
     <style>
-        body { width: 350px; padding: 15px; font-family: 'Segoe UI', sans-serif; background-color: #f8f9fa; margin: 0; transition: background 0.3s; }
+        /* Increased width to 420px for better spacing and alignment */
+        body { width: 420px; padding: 15px; font-family: 'Segoe UI', sans-serif; background-color: #f8f9fa; margin: 0; transition: background 0.3s; }
 
         .container { background: #ffffff; padding: 20px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1); transition: background 0.3s; }
         
         .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 5px; }
-
         .header h3 { color: #2c3e50; margin: 0; font-size: 20px; transition: color 0.3s; }
         
-        /* Theme toggle button styling */
         #themeToggle { background: none; border: none; cursor: pointer; font-size: 18px; padding: 0; display: flex; align-items: center; outline: none; }
 
         #dateDisplay { text-align: center; color: #7f8c8d; font-size: 11px; margin-bottom: 20px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
         
-        /* Search bar styling */
         #searchInput { width: 100%; padding: 10px; margin-bottom: 15px; border: 2px solid #dfe6e9; border-radius: 8px; outline: none; font-size: 13px; box-sizing: border-box; transition: 0.3s; }
-
         #searchInput:focus { border-color: #3498db; }
 
-        .input-group { display: flex; gap: 8px; margin-bottom: 20px; }
+        /* Modified input-group to keep everything in one line */
+        .input-group { 
+            display: flex; 
+            gap: 5px; 
+            margin-bottom: 20px; 
+            align-items: center;
+            flex-wrap: nowrap; /* Prevents button from jumping to the next line */
+        }
 
-        input[type="text"] { flex: 1; padding: 10px; border: 2px solid #dfe6e9; border-radius: 8px; outline: none; transition: 0.3s; font-size: 13px; }
-
+        input[type="text"] { 
+            flex: 2; /* Takes up most space */
+            padding: 10px; 
+            border: 2px solid #dfe6e9; 
+            border-radius: 8px; 
+            outline: none; 
+            transition: 0.3s; 
+            font-size: 13px; 
+            min-width: 0;
+        }
         input[type="text"]:focus { border-color: #3498db; }
         
-        /* Input selectors styling */
+        /* Adjusted dropdowns to be more compact */
         #priorityInput, #categoryInput { 
-            padding: 8px; border: 2px solid #dfe6e9; border-radius: 8px; 
-            outline: none; cursor: pointer; background: #fff; font-size: 12px; 
+            flex: 1;
+            padding: 8px 5px; 
+            border: 2px solid #dfe6e9; 
+            border-radius: 8px; 
+            outline: none; 
+            cursor: pointer; 
+            background: #fff; 
+            font-size: 12px; 
         }
         
-        #saveButton { padding: 10px 15px; background-color: #3498db; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; }
-
+        /* Compact Add button */
+        #saveButton { 
+            padding: 10px 12px; 
+            background-color: #3498db; 
+            color: white; 
+            border: none; 
+            border-radius: 8px; 
+            font-weight: bold; 
+            cursor: pointer; 
+            transition: 0.3s;
+            white-space: nowrap;
+        }
         #saveButton:hover { background-color: #2980b9; }
 
         ul { list-style: none; padding: 0; margin: 0; }
         
         li { 
-            display: flex; align-items: center; background: #f1f2f6; 
-            margin-bottom: 10px; padding: 12px; border-radius: 10px; 
+            display: flex; 
+            align-items: center; 
+            background: #f1f2f6; 
+            margin-bottom: 10px; 
+            padding: 12px; 
+            border-radius: 10px; 
             border-left: 5px solid #3498db;
             transition: all 0.3s ease; 
         }
 
         .task-checkbox { width: 18px; height: 18px; margin-right: 12px; cursor: pointer; accent-color: #2ecc71; }
-
         .task-text { color: #2f3542; font-size: 14px; flex-grow: 1; transition: 0.3s; }
 
-        .edit-btn { 
-            background-color: #f1c40f; color: white; border: none; border-radius: 6px; 
-            padding: 6px 10px; font-size: 11px; cursor: pointer; font-weight: bold; margin-left: 5px;
+        /* Commit 2: Category Tag Styles */
+        .category-tag {
+            font-size: 9px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-right: 8px;
+            font-weight: bold;
+            color: #636e72;
+            background-color: #dfe6e9;
+            text-transform: uppercase;
         }
 
-        .remove-btn { 
-            background-color: #ff7675; color: white; border: none; border-radius: 6px; 
-            padding: 6px 10px; font-size: 11px; cursor: pointer; font-weight: bold; margin-left: 5px;
-        }
+        .edit-btn { background-color: #f1c40f; color: white; border: none; border-radius: 6px; padding: 6px 10px; font-size: 11px; cursor: pointer; font-weight: bold; margin-left: 5px; }
+        .remove-btn { background-color: #ff7675; color: white; border: none; border-radius: 6px; padding: 6px 10px; font-size: 11px; cursor: pointer; font-weight: bold; margin-left: 5px; }
 
-        .footer { 
-            display: flex; justify-content: space-between; align-items: center; 
-            margin-top: 15px; padding-top: 10px; border-top: 1px solid #eee; 
-        }
-
+        .footer { display: flex; justify-content: space-between; align-items: center; margin-top: 15px; padding-top: 10px; border-top: 1px solid #eee; }
         #taskCount { font-size: 11px; color: #95a5a6; font-weight: bold; transition: 0.3s; }
-
         #clearAll { font-size: 11px; color: #ff7675; cursor: pointer; background: none; border: none; font-weight: bold; text-decoration: underline; padding: 0; }
 
-        /* Empty Message Animation --- */
-        #emptyMessage { 
-            display: none; 
-            text-align: center; 
-            padding: 30px 20px; 
-            color: #bdc3c7; 
-            animation: fadeInMessage 0.6s ease-out; 
-        }
+        #emptyMessage { display: none; text-align: center; padding: 30px 20px; color: #bdc3c7; animation: fadeInMessage 0.6s ease-out; }
 
         @keyframes fadeInMessage {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Dark Mode Specific Styles */
+        /* Dark Mode Updates */
         body.dark-mode { background-color: #2d3436; color: #dfe6e9; }
         body.dark-mode .container { background: #353b48; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3); }
         body.dark-mode .header h3 { color: #ffffff; }
         body.dark-mode li { background: #4b4b4b; }
         body.dark-mode .task-text { color: #f5f6fa; }
         body.dark-mode input, body.dark-mode select { background: #2f3640; border-color: #7f8c8d; color: white; }
+        body.dark-mode .category-tag { background-color: #636e72; color: #dfe6e9; }
         
     </style>
 </head>
@@ -112,7 +136,7 @@
         <input type="text" id="searchInput" placeholder="🔍 Search tasks...">
 
         <div class="input-group">
-            <input type="text" id="taskInput" placeholder="Add a new mission...">
+            <input type="text" id="taskInput" placeholder="Add a mission...">
             
             <select id="categoryInput">
                 <option value="general">Gen</option>

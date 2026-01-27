@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', function () {
     const taskInput = document.getElementById('taskInput');
     const priorityInput = document.getElementById('priorityInput');
-    const categoryInput = document.getElementById('categoryInput'); // New category input
+    const categoryInput = document.getElementById('categoryInput'); 
     const saveButton = document.getElementById('saveButton');
     const listContainer = document.getElementById('listContainer');
     const emptyMessage = document.getElementById('emptyMessage');
@@ -13,15 +13,15 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const dingSound = new Audio('ding.mp3');
 
-    // Display current date
+    // Set current date on the header
     const options = { weekday: 'long', month: 'long', day: 'numeric' };
     dateDisplay.innerText = new Date().toLocaleDateString('en-US', options);
 
-    // Initialize UI and theme preference
+    // Initial UI and theme load
     updateUI();
     loadTheme();
 
-    // Theme Toggle Logic
+    // Theme switching logic
     function loadTheme() {
         chrome.storage.sync.get(['theme'], (result) => {
             if (result.theme === 'dark') {
@@ -35,12 +35,10 @@ document.addEventListener('DOMContentLoaded', function () {
         document.body.classList.toggle('dark-mode');
         const isDark = document.body.classList.contains('dark-mode');
         themeToggle.innerText = isDark ? '☀️' : '🌙';
-        
-        // Save current theme to storage
         chrome.storage.sync.set({ theme: isDark ? 'dark' : 'light' });
     });
 
-    // Update UI based on task count
+    // Update the task counter and empty message
     function updateUI() {
         const count = listContainer.children.length;
         taskCount.innerText = `Tasks: ${count}`;
@@ -54,50 +52,44 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    // Search Functionality
+    // Search functionality to filter tasks by text
     searchInput.addEventListener('input', (e) => {
         const term = e.target.value.toLowerCase();
         const tasks = listContainer.querySelectorAll('li');
         
         tasks.forEach(task => {
             const taskText = task.querySelector('.task-text').innerText.toLowerCase();
-            if (taskText.includes(term)) {
-                task.style.display = 'flex';
-            } else {
-                task.style.display = 'none';
-            }
+            task.style.display = taskText.includes(term) ? 'flex' : 'none';
         });
     });
 
-    // Load tasks from storage and SORT them by priority
+    // Load and sort tasks by priority on startup
     chrome.storage.sync.get(['tasks'], function (result) {
         if (result.tasks) {
             const priorityOrder = { high: 1, medium: 2, low: 3 };
-            
             const sortedTasks = result.tasks.sort((a, b) => {
                 return (priorityOrder[a.priority] || 2) - (priorityOrder[b.priority] || 2);
             });
 
             sortedTasks.forEach(taskObj => {
-                // Pass category to the DOM helper
                 addTaskToDOM(taskObj.text, taskObj.completed, taskObj.priority, taskObj.category);
             });
         }
         updateUI();
     });
 
-    // Save task event with Category support
+    // Event listener to save a new task
     saveButton.addEventListener('click', function () {
         const taskVal = taskInput.value.trim();
         const priorityVal = priorityInput.value;
-        const categoryVal = categoryInput.value; // Get category value
+        const categoryVal = categoryInput.value;
 
         if (taskVal) {
             const taskObj = { 
                 text: taskVal, 
                 completed: false, 
                 priority: priorityVal,
-                category: categoryVal // Save category in object
+                category: categoryVal 
             };
             addTaskToDOM(taskObj.text, taskObj.completed, taskObj.priority, taskObj.category);
             saveTask(taskObj);
@@ -106,16 +98,16 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    // Helper to add task elements to UI (Updated with Category parameter)
+    // Main function to build task item in the DOM
     function addTaskToDOM(text, completed = false, priority = 'medium', category = 'general') {
         const li = document.createElement('li');
         
-        // Apply priority color borders
+        // Priority color border
         if (priority === 'high') li.style.borderLeft = '5px solid #ff7675';
         else if (priority === 'low') li.style.borderLeft = '5px solid #2ecc71';
         else li.style.borderLeft = '5px solid #3498db';
         
-        // Entry animation
+        // Task entry animation
         li.style.opacity = '0';
         li.style.transform = 'translateY(-10px)';
         li.style.transition = 'all 0.5s ease';
@@ -126,19 +118,19 @@ document.addEventListener('DOMContentLoaded', function () {
         checkbox.checked = completed;
         checkbox.className = 'task-checkbox';
 
-        // Create priority tag
+        // Priority tag element
         const tag = document.createElement('span');
         tag.innerText = priority.toUpperCase();
-        tag.style.fontSize = '9px';
-        tag.style.padding = '2px 6px';
-        tag.style.borderRadius = '4px';
-        tag.style.marginRight = '8px';
-        tag.style.fontWeight = 'bold';
-        tag.style.color = 'white';
+        tag.style.cssText = "font-size: 9px; padding: 2px 6px; border-radius: 4px; margin-right: 8px; font-weight: bold; color: white;";
         
         if (priority === 'high') tag.style.backgroundColor = '#ff7675';
         else if (priority === 'low') tag.style.backgroundColor = '#2ecc71';
         else tag.style.backgroundColor = '#3498db';
+
+        // --- COMMIT 2: Visual Category Tag Implementation ---
+        const catTag = document.createElement('span');
+        catTag.className = 'category-tag';
+        catTag.innerText = category.toUpperCase();
 
         const span = document.createElement('span');
         span.className = 'task-text';
@@ -166,7 +158,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
 
-        // Checkbox listener
+        // Checkbox status listener
         checkbox.addEventListener('change', function() {
             if (checkbox.checked) { 
                 span.style.textDecoration = 'line-through'; 
@@ -179,7 +171,7 @@ document.addEventListener('DOMContentLoaded', function () {
             updateTaskStatus(span.innerText, checkbox.checked);
         });
 
-        // Remove listener
+        // Remove task listener
         removeBtn.addEventListener('click', () => {
             li.style.transform = 'translateX(20px)';
             li.style.opacity = '0';
@@ -190,8 +182,10 @@ document.addEventListener('DOMContentLoaded', function () {
             }, 300);
         });
 
+        // Append everything to the list item
         li.appendChild(checkbox);
         li.appendChild(tag);
+        li.appendChild(catTag); // Visual Category Tag
         li.appendChild(span);
         btnContainer.appendChild(editBtn);
         btnContainer.appendChild(removeBtn);
@@ -199,21 +193,7 @@ document.addEventListener('DOMContentLoaded', function () {
         listContainer.appendChild(li);
     }
 
-    // Clear completed tasks
-    clearAllBtn.addEventListener('click', () => {
-        chrome.storage.sync.get(['tasks'], (r) => {
-            if (r.tasks) {
-                const remaining = r.tasks.filter(t => !t.completed);
-                chrome.storage.sync.set({ tasks: remaining }, () => {
-                    listContainer.innerHTML = '';
-                    remaining.forEach(t => addTaskToDOM(t.text, t.completed, t.priority, t.category));
-                    updateUI();
-                });
-            }
-        });
-    });
-
-    // Storage helpers
+    // Storage utility functions
     function saveTask(taskObj) {
         chrome.storage.sync.get(['tasks'], r => {
             const ts = r.tasks ? [...r.tasks, taskObj] : [taskObj];
