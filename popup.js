@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', function () {
     const taskInput = document.getElementById('taskInput');
     const priorityInput = document.getElementById('priorityInput');
+    const categoryInput = document.getElementById('categoryInput'); // New category input
     const saveButton = document.getElementById('saveButton');
     const listContainer = document.getElementById('listContainer');
     const emptyMessage = document.getElementById('emptyMessage');
@@ -78,28 +79,35 @@ document.addEventListener('DOMContentLoaded', function () {
             });
 
             sortedTasks.forEach(taskObj => {
-                addTaskToDOM(taskObj.text, taskObj.completed, taskObj.priority);
+                // Pass category to the DOM helper
+                addTaskToDOM(taskObj.text, taskObj.completed, taskObj.priority, taskObj.category);
             });
         }
         updateUI();
     });
 
-    // Save task event
+    // Save task event with Category support
     saveButton.addEventListener('click', function () {
         const taskVal = taskInput.value.trim();
         const priorityVal = priorityInput.value;
+        const categoryVal = categoryInput.value; // Get category value
 
         if (taskVal) {
-            const taskObj = { text: taskVal, completed: false, priority: priorityVal };
-            addTaskToDOM(taskObj.text, taskObj.completed, taskObj.priority);
+            const taskObj = { 
+                text: taskVal, 
+                completed: false, 
+                priority: priorityVal,
+                category: categoryVal // Save category in object
+            };
+            addTaskToDOM(taskObj.text, taskObj.completed, taskObj.priority, taskObj.category);
             saveTask(taskObj);
             taskInput.value = '';
             updateUI();
         }
     });
 
-    // Helper to add task elements to UI
-    function addTaskToDOM(text, completed = false, priority = 'medium') {
+    // Helper to add task elements to UI (Updated with Category parameter)
+    function addTaskToDOM(text, completed = false, priority = 'medium', category = 'general') {
         const li = document.createElement('li');
         
         // Apply priority color borders
@@ -198,7 +206,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 const remaining = r.tasks.filter(t => !t.completed);
                 chrome.storage.sync.set({ tasks: remaining }, () => {
                     listContainer.innerHTML = '';
-                    remaining.forEach(t => addTaskToDOM(t.text, t.completed, t.priority));
+                    remaining.forEach(t => addTaskToDOM(t.text, t.completed, t.priority, t.category));
                     updateUI();
                 });
             }

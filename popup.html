@@ -28,7 +28,8 @@
 
         input[type="text"]:focus { border-color: #3498db; }
         
-        #priorityInput { 
+        /* Input selectors styling */
+        #priorityInput, #categoryInput { 
             padding: 8px; border: 2px solid #dfe6e9; border-radius: 8px; 
             outline: none; cursor: pointer; background: #fff; font-size: 12px; 
         }
@@ -112,6 +113,14 @@
 
         <div class="input-group">
             <input type="text" id="taskInput" placeholder="Add a new mission...">
+            
+            <select id="categoryInput">
+                <option value="general">Gen</option>
+                <option value="work">Work</option>
+                <option value="personal">Pers</option>
+                <option value="study">Study</option>
+            </select>
+
             <select id="priorityInput">
                 <option value="high">High</option>
                 <option value="medium" selected>Med</option>
