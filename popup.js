@@ -12,6 +12,9 @@ document.addEventListener('DOMContentLoaded', function () {
     const themeToggle = document.getElementById('themeToggle');
 
     const dingSound = new Audio('ding.mp3');
+    
+    //  State for Filtering ---
+    let currentFilter = 'all';
 
     // Set current date on the header
     const options = { weekday: 'long', month: 'long', day: 'numeric' };
@@ -52,14 +55,42 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    // Search functionality to filter tasks by text
-    searchInput.addEventListener('input', (e) => {
-        const term = e.target.value.toLowerCase();
+    //  Unified Filter & Search Function ---
+    // This function handles both text search and category button clicks
+    function applyFilters() {
+        const term = searchInput.value.toLowerCase();
         const tasks = listContainer.querySelectorAll('li');
         
         tasks.forEach(task => {
             const taskText = task.querySelector('.task-text').innerText.toLowerCase();
-            task.style.display = taskText.includes(term) ? 'flex' : 'none';
+            const taskCategory = task.querySelector('.category-tag').innerText.toLowerCase();
+            
+            // Check if task matches both search text and selected category button
+            const matchesSearch = taskText.includes(term);
+            const matchesCategory = (currentFilter === 'all' || taskCategory === currentFilter);
+            
+            if (matchesSearch && matchesCategory) {
+                task.style.display = 'flex';
+            } else {
+                task.style.display = 'none';
+            }
+        });
+    }
+
+    // Search input listener
+    searchInput.addEventListener('input', applyFilters);
+
+    //  Filter Button Click Listeners ---
+    const filterButtons = document.querySelectorAll('.filter-btn');
+    filterButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            // Remove active class from previous button and add to the clicked one
+            document.querySelector('.filter-btn.active').classList.remove('active');
+            btn.classList.add('active');
+            
+            // Update the state and filter the list
+            currentFilter = btn.getAttribute('data-filter');
+            applyFilters();
         });
     });
 
@@ -94,6 +125,9 @@ document.addEventListener('DOMContentLoaded', function () {
             addTaskToDOM(taskObj.text, taskObj.completed, taskObj.priority, taskObj.category);
             saveTask(taskObj);
             taskInput.value = '';
+            
+            // Re-apply filters to show the new task if it matches current view
+            applyFilters();
             updateUI();
         }
     });
@@ -127,7 +161,7 @@ document.addEventListener('DOMContentLoaded', function () {
         else if (priority === 'low') tag.style.backgroundColor = '#2ecc71';
         else tag.style.backgroundColor = '#3498db';
 
-        // --- COMMIT 2: Visual Category Tag Implementation ---
+        // Visual Category Tag
         const catTag = document.createElement('span');
         catTag.className = 'category-tag';
         catTag.innerText = category.toUpperCase();
@@ -148,7 +182,7 @@ document.addEventListener('DOMContentLoaded', function () {
         removeBtn.className = 'remove-btn';
         removeBtn.innerText = 'Remove';
 
-        // Edit listener
+        // Listeners for Edit, Checkbox, and Remove
         editBtn.addEventListener('click', () => {
             const newText = prompt("Edit your task:", span.innerText);
             if (newText !== null && newText.trim() !== "") {
@@ -158,7 +192,6 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
 
-        // Checkbox status listener
         checkbox.addEventListener('change', function() {
             if (checkbox.checked) { 
                 span.style.textDecoration = 'line-through'; 
@@ -171,7 +204,6 @@ document.addEventListener('DOMContentLoaded', function () {
             updateTaskStatus(span.innerText, checkbox.checked);
         });
 
-        // Remove task listener
         removeBtn.addEventListener('click', () => {
             li.style.transform = 'translateX(20px)';
             li.style.opacity = '0';
@@ -182,10 +214,10 @@ document.addEventListener('DOMContentLoaded', function () {
             }, 300);
         });
 
-        // Append everything to the list item
+        // Assemble components
         li.appendChild(checkbox);
         li.appendChild(tag);
-        li.appendChild(catTag); // Visual Category Tag
+        li.appendChild(catTag); 
         li.appendChild(span);
         btnContainer.appendChild(editBtn);
         btnContainer.appendChild(removeBtn);

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <style>
-        /* Increased width for better spacing and alignment */
+        /* Increased width to 420px for better spacing and alignment */
         body { width: 420px; padding: 15px; font-family: 'Segoe UI', sans-serif; background-color: #f8f9fa; margin: 0; transition: background 0.3s; }
 
         .container { background: #ffffff; padding: 20px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1); transition: background 0.3s; }
@@ -17,6 +17,26 @@
         
         #searchInput { width: 100%; padding: 10px; margin-bottom: 15px; border: 2px solid #dfe6e9; border-radius: 8px; outline: none; font-size: 13px; box-sizing: border-box; transition: 0.3s; }
         #searchInput:focus { border-color: #3498db; }
+
+        /*Category Filter Buttons Styling */
+        .filter-group { 
+            display: flex; 
+            gap: 5px; 
+            margin-bottom: 15px; 
+            justify-content: center; 
+        }
+        .filter-btn { 
+            padding: 5px 12px; 
+            font-size: 10px; 
+            font-weight: bold; 
+            border: 2px solid #dfe6e9; 
+            border-radius: 20px; 
+            background: white; 
+            cursor: pointer; 
+            transition: 0.3s; 
+            color: #7f8c8d;
+        }
+        .filter-btn.active { background: #3498db; color: white; border-color: #3498db; }
 
         .input-group { 
             display: flex; 
@@ -103,19 +123,22 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* --- DARK MODE UPDATES (Fixed for Select Dropdowns) --- */
+        /* --- DARK MODE UPDATES --- */
         body.dark-mode { background-color: #2d3436; color: #dfe6e9; }
         body.dark-mode .container { background: #353b48; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3); }
         body.dark-mode .header h3 { color: #ffffff; }
         body.dark-mode li { background: #4b4b4b; }
         body.dark-mode .task-text { color: #f5f6fa; }
 
-        /*  Apply dark background and white text to dropdowns */
         body.dark-mode input[type="text"], body.dark-mode #searchInput { background: #2f3640; border-color: #7f8c8d; color: white; }
         body.dark-mode select { background-color: #353b48 !important; color: #ffffff !important; border: 2px solid #7f8c8d; }
         body.dark-mode select option { background-color: #2f3640; color: #ffffff; }
 
         body.dark-mode .category-tag { background-color: #636e72; color: #dfe6e9; }
+        
+        /* Dark mode support for filter buttons */
+        body.dark-mode .filter-btn { background: #2f3640; border-color: #7f8c8d; color: #bdc3c7; }
+        body.dark-mode .filter-btn.active { background: #3498db; color: white; border-color: #3498db; }
         
     </style>
 </head>
@@ -135,6 +158,13 @@
         <div id="dateDisplay"></div>
 
         <input type="text" id="searchInput" placeholder="🔍 Search tasks...">
+
+        <div class="filter-group">
+            <button class="filter-btn active" data-filter="all">ALL</button>
+            <button class="filter-btn" data-filter="work">WORK</button>
+            <button class="filter-btn" data-filter="personal">PERS</button>
+            <button class="filter-btn" data-filter="study">STUDY</button>
+        </div>
 
         <div class="input-group">
             <input type="text" id="taskInput" placeholder="Add a mission...">
