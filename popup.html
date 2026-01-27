@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <style>
-        /* Increased width to 420px for better spacing and alignment */
+        /* Increased width for better spacing and alignment */
         body { width: 420px; padding: 15px; font-family: 'Segoe UI', sans-serif; background-color: #f8f9fa; margin: 0; transition: background 0.3s; }
 
         .container { background: #ffffff; padding: 20px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1); transition: background 0.3s; }
@@ -18,17 +18,16 @@
         #searchInput { width: 100%; padding: 10px; margin-bottom: 15px; border: 2px solid #dfe6e9; border-radius: 8px; outline: none; font-size: 13px; box-sizing: border-box; transition: 0.3s; }
         #searchInput:focus { border-color: #3498db; }
 
-        /* Modified input-group to keep everything in one line */
         .input-group { 
             display: flex; 
             gap: 5px; 
             margin-bottom: 20px; 
             align-items: center;
-            flex-wrap: nowrap; /* Prevents button from jumping to the next line */
+            flex-wrap: nowrap; 
         }
 
         input[type="text"] { 
-            flex: 2; /* Takes up most space */
+            flex: 2; 
             padding: 10px; 
             border: 2px solid #dfe6e9; 
             border-radius: 8px; 
@@ -39,7 +38,6 @@
         }
         input[type="text"]:focus { border-color: #3498db; }
         
-        /* Adjusted dropdowns to be more compact */
         #priorityInput, #categoryInput { 
             flex: 1;
             padding: 8px 5px; 
@@ -51,7 +49,6 @@
             font-size: 12px; 
         }
         
-        /* Compact Add button */
         #saveButton { 
             padding: 10px 12px; 
             background-color: #3498db; 
@@ -81,7 +78,6 @@
         .task-checkbox { width: 18px; height: 18px; margin-right: 12px; cursor: pointer; accent-color: #2ecc71; }
         .task-text { color: #2f3542; font-size: 14px; flex-grow: 1; transition: 0.3s; }
 
-        /* Commit 2: Category Tag Styles */
         .category-tag {
             font-size: 9px;
             padding: 2px 6px;
@@ -107,13 +103,18 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Dark Mode Updates */
+        /* --- DARK MODE UPDATES (Fixed for Select Dropdowns) --- */
         body.dark-mode { background-color: #2d3436; color: #dfe6e9; }
         body.dark-mode .container { background: #353b48; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3); }
         body.dark-mode .header h3 { color: #ffffff; }
         body.dark-mode li { background: #4b4b4b; }
         body.dark-mode .task-text { color: #f5f6fa; }
-        body.dark-mode input, body.dark-mode select { background: #2f3640; border-color: #7f8c8d; color: white; }
+
+        /*  Apply dark background and white text to dropdowns */
+        body.dark-mode input[type="text"], body.dark-mode #searchInput { background: #2f3640; border-color: #7f8c8d; color: white; }
+        body.dark-mode select { background-color: #353b48 !important; color: #ffffff !important; border: 2px solid #7f8c8d; }
+        body.dark-mode select option { background-color: #2f3640; color: #ffffff; }
+
         body.dark-mode .category-tag { background-color: #636e72; color: #dfe6e9; }
         
     </style>
